@@ -1,0 +1,43 @@
+#2)
+
+% --- DATOS (HECHOS) ---
+power_list([
+    power(logica, 100, 10),
+    power(sigilo, 150, 30),
+    power(fuerza, 250, 50)
+]).
+
+villain_list([
+    villain(riddler, 90, [logica, sigilo]),
+    villain(bane, 240, [fuerza])
+]).
+
+% --- PUNTO DE ENTRADA ---
+batman_can_win(EnergiaMaxima) :-
+    power_list(Superpoderes),
+    villain_list(Villanos),
+    EstadoInicial = estado(Villanos, Superpoderes, EnergiaMaxima),
+    dfs(EstadoInicial, [EstadoInicial], _).
+
+dfs(Estado, _, [Estado]) :-
+    meta(Estado).
+
+dfs(EstadoActual, Visitados, [EstadoActual | CaminoRestante]) :-
+    siguiente_estado(EstadoActual, SiguienteEstado),
+    not(member(SiguienteEstado, Visitados)),
+    dfs(SiguienteEstado, [SiguienteEstado | Visitados], CaminoRestante).
+
+meta(estado(Villanos, _, _)) :-
+    \+ (member(villain(_, Vida, _), Villanos), Vida > 0).
+
+% Transición de estados
+siguiente_estado(estado(Villanos, Poderes, Energia), estado(NuevosVillanos, Poderes, NuevaEnergia)) :-
+    select(villain(Nombre, Vida, Debilidades), Villanos, OtrosVillanos),
+    Vida > 0,
+    member(power(Tipo, Daño, Coste), Poderes),
+    member(Tipo, Debilidades),  
+    Energia >= Coste,      
+    NuevaEnergia is Energia - Coste,
+    VidaFinal is max(0, Vida - Daño), 
+    NuevoVillano = villain(Nombre, VidaFinal, Debilidades),
+    NuevosVillanos = [NuevoVillano | OtrosVillanos].
