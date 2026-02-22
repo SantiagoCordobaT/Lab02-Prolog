@@ -1,0 +1,27 @@
+meta(Estado) :- 
+    length(Estado, 8).
+
+dfs(Estado, _, [Estado]) :-
+    meta(Estado).
+
+dfs(EstadoActual, Visitados, [EstadoActual | CaminoRestante]) :-
+    siguiente_estado(EstadoActual, SiguienteEstado),
+    not(member(SiguienteEstado, Visitados)),
+    dfs(SiguienteEstado, [SiguienteEstado | Visitados], CaminoRestante).
+
+siguiente_estado(ReinasAnteriores, [FilaNueva | ReinasAnteriores]) :-
+    member(FilaNueva, [1, 2, 3, 4, 5, 6, 7, 8]),
+    not(member(FilaNueva, ReinasAnteriores)),
+    no_ataca_diagonal(FilaNueva, ReinasAnteriores, 1).
+
+no_ataca_diagonal(_, [], _).
+
+no_ataca_diagonal(FilaNueva, [FilaAnterior | RestoReinas], DistanciaCols) :-
+    DiferenciaFilas is abs(FilaNueva - FilaAnterior),
+    DiferenciaFilas =\= DistanciaCols,
+    NuevaDist is DistanciaCols + 1,
+    no_ataca_diagonal(FilaNueva, RestoReinas, NuevaDist).
+
+solucion(Solucion) :-
+    EstadoInicial = [],
+    dfs(EstadoInicial, [EstadoInicial], Solucion).
