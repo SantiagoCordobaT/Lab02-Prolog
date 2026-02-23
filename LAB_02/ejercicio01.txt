@@ -35,6 +35,3 @@ siguiente_estado(pos(LugarActual), pos(LugarSiguiente)):- ubicacion(LugarActual,
 buscar_solucion(Solucion) :-
     EstadoInicial = pos(orilla_inicial),
     dfs(EstadoInicial, [EstadoInicial], Solucion).
-
-#2)
-
